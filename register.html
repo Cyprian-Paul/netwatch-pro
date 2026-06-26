@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetWatch Pro — Register</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { overflow: auto; }
+    .login-page { min-height:100vh; display:flex; background:var(--bg); position:relative; overflow:hidden; }
+    .grid-bg { position:absolute; inset:0; background-image: linear-gradient(rgba(0,229,195,0.03) 1px,transparent 1px), linear-gradient(90deg,rgba(0,229,195,0.03) 1px,transparent 1px); background-size:40px 40px; z-index:1; }
+    .restricted-bar { background:rgba(255,71,87,0.08); border-bottom:1px solid rgba(255,71,87,0.2); padding:8px 60px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--red); letter-spacing:2px; text-transform:uppercase; position:fixed; top:0;left:0;right:0; z-index:200; }
+    .login-left { flex:1; display:flex; flex-direction:column; justify-content:center; padding:80px 60px 60px; position:relative; z-index:2; }
+    .login-right { width:460px; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:80px 40px 40px; background:var(--bg2); border-left:1px solid var(--border); position:relative; z-index:2; }
+    .brand { display:flex; align-items:center; gap:14px; margin-bottom:44px; }
+    .brand-icon { width:44px; height:44px; border:2px solid var(--teal); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--teal); font-size:20px; }
+    .brand-name { font-size:22px; font-weight:700; }
+    .brand-name span { color:var(--teal); }
+    .headline { font-size:38px; font-weight:700; line-height:1.2; margin-bottom:14px; }
+    .subtext { font-size:15px; color:var(--text2); margin-bottom:40px; line-height:1.6; }
+    .features { display:flex; flex-direction:column; gap:16px; }
+    .feature { display:flex; align-items:flex-start; gap:12px; }
+    .fdot { width:6px; height:6px; background:var(--teal); border-radius:50%; margin-top:7px; flex-shrink:0; }
+    .ftext { font-size:14px; color:var(--text2); }
+    .ftext strong { color:var(--text); }
+    .form-wrap { width:100%; max-width:380px; }
+    .form-wrap h2 { font-size:24px; font-weight:700; margin-bottom:6px; }
+    .form-wrap > p { font-size:13px; color:var(--text2); margin-bottom:28px; }
+    .pw-wrap { position:relative; }
+    .pw-wrap .form-input { max-width:100%; width:100%; padding-right:56px; }
+    .pw-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text3); cursor:pointer; font-size:12px; font-family:'JetBrains Mono',monospace; padding:4px 6px; transition:color 0.15s; }
+    .pw-toggle:hover { color:var(--teal); }
+    .match-msg { font-size:11px; margin-top:4px; }
+    .match-ok { color:var(--green); }
+    .match-fail { color:var(--red); }
+    .error-box { background:rgba(255,71,87,0.1); border:1px solid rgba(255,71,87,0.3); color:var(--red); padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px; }
+    .success-box { background:rgba(46,213,115,0.1); border:1px solid rgba(46,213,115,0.3); color:var(--green); padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px; }
+    .reg-btn { width:100%; justify-content:center; margin-top:10px; padding:12px; font-size:14px; }
+    .fi { max-width:100%; width:100%; }
+  </style>
+</head>
+<body>
+<div class="restricted-bar">⚠ SYSTEM ACCESS RESTRICTED — AUTHORIZED USERS ONLY</div>
+<div class="login-page">
+  <div class="grid-bg"></div>
+  <div class="login-left">
+    <div class="brand">
+      <div class="brand-icon">⊙</div>
+      <div class="brand-name">NetWatch <span>Pro</span></div>
+    </div>
+    <h1 class="headline">Join NetWatch<br />Pro Today</h1>
+    <p class="subtext">Create your account to start monitoring your network infrastructure in real time.</p>
+    <div class="features">
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>Free to use</strong> — no credit card required</div></div>
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>Secure</strong> — bcrypt password hashing and JWT auth</div></div>
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>Full access</strong> — ping devices, scan ports, view logs</div></div>
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>Role-based</strong> — admin and viewer roles available</div></div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="form-wrap">
+      <h2>Create Account</h2>
+      <p>Fill in the details below to register.</p>
+
+      <div id="error-box" class="error-box" style="display:none"></div>
+      <div id="success-box" class="success-box" style="display:none"></div>
+
+      <form onsubmit="doRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input fi" id="reg-username" placeholder="Choose a username" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input fi" id="reg-email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="reg-password" placeholder="Min 6 characters" required />
+            <button type="button" class="pw-toggle" onclick="togglePw('reg-password',this)">Show</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="reg-confirm" placeholder="Repeat your password" oninput="checkMatch()" required />
+            <button type="button" class="pw-toggle" onclick="togglePw('reg-confirm',this)">Show</button>
+          </div>
+          <div class="match-msg" id="match-msg"></div>
+        </div>
+        <button type="submit" class="btn btn-primary reg-btn" id="reg-btn">Create Account</button>
+      </form>
+
+      <p style="margin-top:20px;font-size:13px;color:var(--text2);text-align:center">
+        Already have an account?
+        <a href="login.html" style="color:var(--teal);font-weight:600;text-decoration:underline">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') { input.type = 'text'; btn.textContent = 'Hide'; }
+    else { input.type = 'password'; btn.textContent = 'Show'; }
+  }
+
+  function checkMatch() {
+    const pw = document.getElementById('reg-password').value;
+    const cf = document.getElementById('reg-confirm').value;
+    const msg = document.getElementById('match-msg');
+    if (!cf) { msg.textContent = ''; return; }
+    if (pw === cf) { msg.textContent = 'Passwords match'; msg.className = 'match-msg match-ok'; }
+    else { msg.textContent = 'Passwords do not match'; msg.className = 'match-msg match-fail'; }
+  }
+
+  function doRegister(e) {
+    e.preventDefault();
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pw = document.getElementById('reg-password').value;
+    const cf = document.getElementById('reg-confirm').value;
+    const errorBox = document.getElementById('error-box');
+    const successBox = document.getElementById('success-box');
+    const btn = document.getElementById('reg-btn');
+
+    errorBox.style.display = 'none';
+    successBox.style.display = 'none';
+
+    if (pw !== cf) { errorBox.textContent = 'Passwords do not match.'; errorBox.style.display = 'block'; return; }
+    if (pw.length < 6) { errorBox.textContent = 'Password must be at least 6 characters.'; errorBox.style.display = 'block'; return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = 'Create Account';
+      successBox.textContent = 'Account created successfully! Redirecting to login...';
+      successBox.style.display = 'block';
+      setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+    }, 1200);
+  }
+</script>
+</body>
+</html>

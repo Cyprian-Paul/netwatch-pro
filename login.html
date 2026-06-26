@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetWatch Pro — Login</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { overflow: auto; }
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,195,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,195,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 1;
+    }
+    .restricted-bar {
+      background: rgba(255,71,87,0.08);
+      border-bottom: 1px solid rgba(255,71,87,0.2);
+      padding: 8px 60px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--red);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+    }
+    .login-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px 60px;
+      position: relative;
+      z-index: 2;
+    }
+    .login-right {
+      width: 460px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 40px 40px;
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      position: relative;
+      z-index: 2;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 44px; }
+    .brand-icon {
+      width: 44px; height: 44px;
+      border: 2px solid var(--teal);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--teal); font-size: 20px;
+    }
+    .brand-name { font-size: 22px; font-weight: 700; }
+    .brand-name span { color: var(--teal); }
+    .headline { font-size: 38px; font-weight: 700; line-height: 1.2; margin-bottom: 14px; }
+    .subtext { font-size: 15px; color: var(--text2); margin-bottom: 40px; line-height: 1.6; }
+    .features { display: flex; flex-direction: column; gap: 16px; }
+    .feature { display: flex; align-items: flex-start; gap: 12px; }
+    .fdot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; margin-top: 7px; flex-shrink: 0; }
+    .ftext { font-size: 14px; color: var(--text2); }
+    .ftext strong { color: var(--text); }
+    .tech-tags { display: flex; gap: 8px; margin-top: 40px; flex-wrap: wrap; }
+    .tech-tag {
+      padding: 4px 10px;
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text3);
+    }
+    .form-wrap { width: 100%; max-width: 380px; }
+    .form-wrap h2 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .form-wrap > p { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+    .error-box {
+      background: rgba(255,71,87,0.1);
+      border: 1px solid rgba(255,71,87,0.3);
+      color: var(--red);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .attempts { color: var(--yellow); font-size: 11px; margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+    .pw-wrap { position: relative; }
+    .pw-wrap .form-input { max-width: 100%; width: 100%; padding-right: 56px; }
+    .pw-toggle {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 4px 6px;
+      transition: color 0.15s;
+    }
+    .pw-toggle:hover { color: var(--teal); }
+    .login-btn {
+      width: 100%;
+      justify-content: center;
+      margin-top: 10px;
+      padding: 12px;
+      font-size: 14px;
+    }
+    .cred-box {
+      margin-top: 16px;
+      padding: 10px 14px;
+      background: rgba(0,229,195,0.05);
+      border: 1px solid rgba(0,229,195,0.15);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text2);
+      text-align: center;
+      line-height: 1.8;
+    }
+    .cred-box .cred-label { font-size: 10px; color: var(--text3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+    .cred-val { font-family: 'JetBrains Mono', monospace; color: var(--teal); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<div class="restricted-bar">⚠ SYSTEM ACCESS RESTRICTED — AUTHORIZED USERS ONLY</div>
+
+<div class="login-page">
+  <div class="grid-bg"></div>
+
+  <div class="login-left">
+    <div class="brand">
+      <div class="brand-icon">⊙</div>
+      <div class="brand-name">NetWatch <span>Pro</span></div>
+    </div>
+    <h1 class="headline">Real-time Network<br />Security Monitoring</h1>
+    <p class="subtext">Built for CCNA professionals who need live visibility<br />into their network infrastructure.</p>
+    <div class="features">
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>ICMP Ping Monitoring</strong> — track latency and uptime across all devices</div></div>
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>TCP Port Scanner</strong> — identify open services on any IP in your range</div></div>
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>Event Log</strong> — full timeline of network activity and alerts</div></div>
+      <div class="feature"><div class="fdot"></div><div class="ftext"><strong>Role-based Access</strong> — admin and viewer roles with full audit trail</div></div>
+    </div>
+    <div class="tech-tags">
+      <span class="tech-tag">React</span>
+      <span class="tech-tag">Flask</span>
+      <span class="tech-tag">SQLite</span>
+      <span class="tech-tag">JWT</span>
+      <span class="tech-tag">ICMP</span>
+      <span class="tech-tag">TCP</span>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="form-wrap">
+      <h2>Authenticate</h2>
+      <p>Enter your credentials to access the monitoring dashboard.</p>
+
+      <div class="error-box" id="error-box" style="display:none">
+        <span id="error-msg">Invalid credentials.</span>
+        <div class="attempts" id="attempts-msg"></div>
+      </div>
+
+      <form onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" id="username" style="max-width:100%;width:100%" placeholder="Enter username" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="password" placeholder="Enter password" autocomplete="current-password" />
+            <button type="button" class="pw-toggle" id="pw-toggle" onclick="togglePassword()">Show</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary login-btn" id="login-btn">Authenticate</button>
+      </form>
+
+      <div class="cred-box">
+        <div class="cred-label">Demo Credentials</div>
+        <div>Username: <span class="cred-val">admin</span></div>
+        <div>Password: <span class="cred-val">admin123</span></div>
+      </div>
+
+      <p style="margin-top:20px;font-size:13px;color:var(--text2);text-align:center">
+        Don't have an account?
+        <a href="register.html" style="color:var(--teal);font-weight:600;text-decoration:underline">Create account</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let attempts = 0;
+
+  function togglePassword() {
+    const input = document.getElementById('password');
+    const btn = document.getElementById('pw-toggle');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'Hide';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'Show';
+    }
+  }
+
+  function doLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('login-btn');
+    const errorBox = document.getElementById('error-box');
+    const errorMsg = document.getElementById('error-msg');
+    const attemptsMsg = document.getElementById('attempts-msg');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Authenticating...';
+
+    setTimeout(() => {
+      if (username === 'admin' && password === 'admin123') {
+        btn.innerHTML = '✓ Success — Redirecting...';
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 800);
+      } else {
+        attempts++;
+        errorBox.style.display = 'block';
+        errorMsg.textContent = 'Invalid credentials.';
+        attemptsMsg.textContent = 'Attempt ' + attempts + ' of 5';
+        btn.disabled = false;
+        btn.innerHTML = 'Authenticate';
+      }
+    }, 1000);
+  }
+</script>
+</body>
+</html>
