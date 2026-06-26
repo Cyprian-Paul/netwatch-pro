@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetWatch Pro — Demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">O</div>
+      <div class="logo-text">NetWatch <span>Pro</span></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Monitor</div>
+      <button class="nav-item active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
+      <button class="nav-item" onclick="showPage('devices',this)">⊡ Devices</button>
+      <button class="nav-item" onclick="showPage('scanner',this)">⊕ Port Scanner</button>
+      <button class="nav-item" onclick="showPage('events',this)">≡ Event Log <span class="badge">3</span></button>
+      <div class="nav-label">Admin</div>
+      <button class="nav-item" onclick="showPage('users',this)">◉ Users</button>
+      <button class="nav-item" onclick="showPage('audit',this)">⊟ Audit Log</button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">C</div>
+      <div>
+        <div class="uname">cyprian</div>
+        <div class="urole">ADMIN</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="page-title">Dashboard</h1>
+      <span class="pill pill-live">LIVE</span>
+      <span class="pill pill-high">HIGH</span>
+      <span class="clock" id="clock">00:00:00</span>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page" id="pg-dashboard">
+      <div class="stats-grid">
+        <div class="stat teal"><div class="stat-label">Devices</div><div class="stat-val">8</div><div class="stat-sub">Registered hosts</div></div>
+        <div class="stat green"><div class="stat-label">Online</div><div class="stat-val">6</div><div class="stat-sub">Responding to ping</div></div>
+        <div class="stat red"><div class="stat-label">Offline</div><div class="stat-val">2</div><div class="stat-sub">No response</div></div>
+        <div class="stat blue"><div class="stat-label">Events</div><div class="stat-val">47</div><div class="stat-sub">Total logged</div></div>
+        <div class="stat yellow"><div class="stat-label">Critical</div><div class="stat-val">3</div><div class="stat-sub">High severity alerts</div></div>
+        <div class="stat blue"><div class="stat-label">Users</div><div class="stat-val">4</div><div class="stat-sub">System accounts</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Recent Events</span>
+          <button class="btn btn-ghost btn-sm">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Severity</th><th>Message</th><th>Source IP</th><th>Time</th></tr></thead>
+            <tbody>
+              <tr><td class="mono sm">ping</td><td><span class="badge b-info">info</span></td><td class="td-msg">Ping 192.168.1.1: online (2.3ms)</td><td class="mono teal sm">192.168.1.1</td><td class="mono muted xs">16:15:02</td></tr>
+              <tr><td class="mono sm">port_scan</td><td><span class="badge b-info">info</span></td><td class="td-msg">Port scan on 192.168.1.10: 3 open ports</td><td class="mono teal sm">192.168.1.10</td><td class="mono muted xs">16:14:48</td></tr>
+              <tr><td class="mono sm">ping</td><td><span class="badge b-warn">warning</span></td><td class="td-msg">Ping 192.168.1.5: offline</td><td class="mono teal sm">192.168.1.5</td><td class="mono muted xs">16:14:30</td></tr>
+              <tr><td class="mono sm">ping</td><td><span class="badge b-crit">critical</span></td><td class="td-msg">High latency detected: 890ms on 10.0.0.5</td><td class="mono teal sm">10.0.0.5</td><td class="mono muted xs">16:13:55</td></tr>
+              <tr><td class="mono sm">login</td><td><span class="badge b-info">info</span></td><td class="td-msg">User cyprian logged in</td><td class="mono teal sm">127.0.0.1</td><td class="mono muted xs">16:13:10</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEVICES -->
+    <div class="page hidden" id="pg-devices">
+      <div class="filter-bar">
+        <input class="form-input" placeholder="Search by name or IP..." oninput="filterDevices(this.value)">
+        <button class="btn btn-ghost btn-sm" onclick="pingAll()">↻ Ping All</button>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Add Device modal would open in the real app','s')">+ Add Device</button>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title" id="dev-count">Devices (8)</span>
+          <button class="btn btn-ghost btn-sm" onclick="renderDevices(devices)">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>IP Address</th><th>Type</th><th>Location</th><th>Status</th><th>Latency</th><th>Last Seen</th><th>Actions</th></tr></thead>
+            <tbody id="dev-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PORT SCANNER -->
+    <div class="page hidden" id="pg-scanner">
+      <div class="scan-grid">
+        <div class="card">
+          <div class="card-head"><span class="card-title">TCP Port Scanner</span></div>
+          <div class="form-group">
+            <label class="form-label">Target IP</label>
+            <input class="form-input full" id="scan-ip" placeholder="192.168.1.1">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Start Port</label>
+              <input type="number" class="form-input full" id="scan-start" value="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Port</label>
+              <input type="number" class="form-input full" id="scan-end" value="1024">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Presets</label>
+            <div class="preset-row">
+              <button class="btn btn-ghost btn-sm" onclick="setPreset(80,443)">Web</button>
+              <button class="btn btn-ghost btn-sm" onclick="setPreset(22,22)">SSH</button>
+              <button class="btn btn-ghost btn-sm" onclick="setPreset(3389,3389)">RDP</button>
+              <button class="btn btn-ghost btn-sm" onclick="setPreset(1433,5432)">Database</button>
+              <button class="btn btn-ghost btn-sm" onclick="setPreset(1,1024)">All Common</button>
+            </div>
+          </div>
+          <button class="btn btn-primary full-btn" id="scan-btn" onclick="runScan()">⊕ Scan Now</button>
+          <div class="warn-box">⚠ Only scan devices you own or have explicit permission to scan.</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Results</span></div>
+          <div id="scan-results"><div class="empty">Enter a target IP and click Scan Now.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="page hidden" id="pg-events">
+      <div class="filter-bar">
+        <input class="form-input" placeholder="Filter events..." oninput="filterEvents(this.value)">
+        <select class="form-select" onchange="filterEventSev(this.value)">
+          <option value="all">All Severities</option>
+          <option value="info">Info</option>
+          <option value="warning">Warning</option>
+          <option value="critical">Critical</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="renderEvents(events)">↻ Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title" id="ev-count">Event Log (12)</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Type</th><th>Severity</th><th>Message</th><th>Source IP</th></tr></thead>
+            <tbody id="ev-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page hidden" id="pg-users">
+      <div class="filter-bar">
+        <button class="btn btn-primary btn-sm" onclick="showToast('Create User modal would open in the real app','s')">+ New User</button>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">System Users (4)</span>
+          <button class="btn btn-ghost btn-sm">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td class="fw6">cyprian</td><td class="muted">cyprian@netwatch.pro</td><td><span class="badge b-admin">admin</span></td><td class="mono muted xs">6/24/2026</td><td><button class="btn btn-danger btn-sm" onclick="showToast('Cannot delete yourself','e')">Delete</button></td></tr>
+              <tr><td class="fw6">alice</td><td class="muted">alice@company.com</td><td><span class="badge b-viewer">viewer</span></td><td class="mono muted xs">6/23/2026</td><td><button class="btn btn-danger btn-sm" onclick="showToast('User alice deleted','s')">Delete</button></td></tr>
+              <tr><td class="fw6">bob</td><td class="muted">bob@company.com</td><td><span class="badge b-viewer">viewer</span></td><td class="mono muted xs">6/22/2026</td><td><button class="btn btn-danger btn-sm" onclick="showToast('User bob deleted','s')">Delete</button></td></tr>
+              <tr><td class="fw6">jane</td><td class="muted">jane@company.com</td><td><span class="badge b-admin">admin</span></td><td class="mono muted xs">6/20/2026</td><td><button class="btn btn-danger btn-sm" onclick="showToast('User jane deleted','s')">Delete</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIT LOG -->
+    <div class="page hidden" id="pg-audit">
+      <div class="filter-bar">
+        <input class="form-input" placeholder="Filter by user, action, target...">
+        <button class="btn btn-ghost btn-sm">↻ Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Audit Trail (9)</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Target</th><th>IP</th></tr></thead>
+            <tbody>
+              <tr><td class="mono muted xs">16:15:42</td><td class="fw6 sm">cyprian</td><td><span class="action-badge" style="color:#2ed573">LOGIN</span></td><td class="mono teal sm">auth</td><td class="mono muted xs">127.0.0.1</td></tr>
+              <tr><td class="mono muted xs">16:14:48</td><td class="fw6 sm">cyprian</td><td><span class="action-badge" style="color:#1e90ff">PORT_SCAN</span></td><td class="mono teal sm">192.168.1.10</td><td class="mono muted xs">127.0.0.1</td></tr>
+              <tr><td class="mono muted xs">16:13:20</td><td class="fw6 sm">cyprian</td><td><span class="action-badge" style="color:#00e5c3">ADD_DEVICE</span></td><td class="mono teal sm">192.168.1.10</td><td class="mono muted xs">127.0.0.1</td></tr>
+              <tr><td class="mono muted xs">16:12:05</td><td class="fw6 sm">jane</td><td><span class="action-badge" style="color:#2ed573">LOGIN</span></td><td class="mono teal sm">auth</td><td class="mono muted xs">10.0.0.2</td></tr>
+              <tr><td class="mono muted xs">16:10:00</td><td class="fw6 sm">cyprian</td><td><span class="action-badge" style="color:#00e5c3">CREATE_USER</span></td><td class="mono teal sm">alice</td><td class="mono muted xs">127.0.0.1</td></tr>
+              <tr><td class="mono muted xs">16:09:10</td><td class="fw6 sm">cyprian</td><td><span class="action-badge" style="color:#1e90ff">PORT_SCAN</span></td><td class="mono teal sm">10.0.0.1</td><td class="mono muted xs">127.0.0.1</td></tr>
+              <tr><td class="mono muted xs">16:08:30</td><td class="fw6 sm">alice</td><td><span class="action-badge" style="color:#2ed573">LOGIN</span></td><td class="mono teal sm">auth</td><td class="mono muted xs">192.168.1.100</td></tr>
+              <tr><td class="mono muted xs">16:07:00</td><td class="fw6 sm">cyprian</td><td><span class="action-badge" style="color:#00e5c3">ADD_DEVICE</span></td><td class="mono teal sm">192.168.1.1</td><td class="mono muted xs">127.0.0.1</td></tr>
+              <tr><td class="mono muted xs">16:05:10</td><td class="fw6 sm">cyprian</td><td><span class="action-badge" style="color:#2ed573">LOGIN</span></td><td class="mono teal sm">auth</td><td class="mono muted xs">127.0.0.1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
